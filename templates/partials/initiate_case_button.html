@@ -1,0 +1,28 @@
+<!-- DX Engine Initiate Case Button (Embeddable Partial) -->
+<div class="dx-initiate-case-wrapper d-inline-block">
+  <button
+    type="button"
+    class="btn btn-primary btn-sm js-dx-initiate-case-btn"
+    data-dx-target-container="dx-initiate-case-runtime"
+  >
+    Initiate Case
+  </button>
+</div>
+
+<!-- Runtime container used by modal-mounted DXInterpreter -->
+<div id="dx-initiate-case-runtime" class="d-none"></div>
+
+<script>
+  (function () {
+    if (!window.DX || !window.DX.InitiateCaseButton) {
+      return;
+    }
+
+    window.DX.InitiateCaseButton.mount('.js-dx-initiate-case-btn', {
+      runtimeContainerId: 'dx-initiate-case-runtime',
+      dxId: 'AnonymousIntakeDX',
+      modalTitle: 'Initiate New Case',
+      loginAction: '/login'
+    });
+  })();
+</script>

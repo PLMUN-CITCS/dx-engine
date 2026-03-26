@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DX Engine — Access Management Portal</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
+  <link rel="stylesheet" href="/public/css/dx-engine.css">
+</head>
+<body class="bg-light">
+
+  <div class="container-fluid">
+    <div class="row min-vh-100">
+      <aside class="col-12 col-md-3 col-lg-2 bg-white border-end py-3">
+        <div class="px-3 mb-4">
+          <h6 class="text-uppercase text-secondary mb-1">DX Engine</h6>
+          <h5 class="mb-0">RBAC Admin</h5>
+        </div>
+
+        <nav class="nav flex-column gap-1 px-2">
+          <a class="nav-link active js-rbac-nav" href="#role_list" data-rbac-view="role_list">Role List</a>
+          <a class="nav-link js-rbac-nav" href="#role_detail" data-rbac-view="role_detail">Role Detail</a>
+          <a class="nav-link js-rbac-nav" href="#permission_list" data-rbac-view="permission_list">Permission List</a>
+          <a class="nav-link js-rbac-nav" href="#user_role_assignment" data-rbac-view="user_role_assignment">User Role Assignment</a>
+        </nav>
+      </aside>
+
+      <main class="col-12 col-md-9 col-lg-10 py-3">
+        <div class="px-2 px-md-3">
+          <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">Admin</li>
+              <li class="breadcrumb-item active" aria-current="page" id="rbac-breadcrumb-current">Role List</li>
+            </ol>
+          </nav>
+
+          <div id="dx-container" class="bg-white border rounded p-3 shadow-sm"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+
+  <script src="/public/js/StateManager.js"></script>
+  <script src="/public/js/ComponentRegistry.js"></script>
+  <script src="/public/js/VisibilityEngine.js"></script>
+  <script src="/public/js/Validator.js"></script>
+  <script src="/public/js/Stepper.js"></script>
+  <script src="/public/js/DXInterpreter.js"></script>
+  <script src="/public/js/RbacAdminPage.js"></script>
+</body>
+</html>

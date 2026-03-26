@@ -1,0 +1,79 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use DxEngine\App\Models\JobModel;
+use DxEngine\Core\Autoloader;
+use DxEngine\Core\DBALWrapper;
+use DxEngine\Core\Jobs\QueueWorker;
+use Dotenv\Dotenv;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/src/Core/Autoloader.php';
+
+define('APP_ROOT', dirname(__DIR__));
+(new Autoloader())->register();
+Dotenv::createImmutable(APP_ROOT)->safeLoad();
+
+/**
+ * Cron schedule example:
+ * * * * * php /path/to/dx-engine/bin/worker >> /storage/logs/worker.log 2>&1
+ */
+
+$lockPath = APP_ROOT . '/storage/cache/.worker.lock';
+$lockHandle = fopen($lockPath, 'c+');
+
+if ($lockHandle === false) {
+    exit(0);
+}
+
+if (!flock($lockHandle, LOCK_EX | LOCK_NB)) {
+    fclose($lockHandle);
+    exit(0);
+}
+
+/** @var array<string, mixed> $dbConfig */
+$dbConfig = require APP_ROOT . '/config/database.php';
+$driver = (string) ($_ENV['DB_DRIVER'] ?? 'mysql');
+$activeDbConfig = $dbConfig[$driver] ?? $dbConfig['mysql'];
+
+$logger = new Logger('dx-worker');
+$logger->pushHandler(new StreamHandler(APP_ROOT . '/storage/logs/worker.log', Logger::INFO));
+
+$workerId = (string) ($_ENV['QUEUE_WORKER_ID'] ?? gethostname() ?: 'worker-node');
+$logger->info('Queue worker started', ['worker_id' => $workerId]);
+
+$stop = false;
+if (function_exists('pcntl_signal')) {
+    pcntl_signal(SIGTERM, static function () use (&$stop): void {
+        $stop = true;
+    });
+}
+
+try {
+    $dbal = new DBALWrapper($activeDbConfig);
+    $jobModel = new JobModel($dbal);
+
+    // Reset orphaned processing jobs on startup.
+    $jobModel->releaseStaleJobs(300);
+
+    $worker = new QueueWorker($jobModel, $logger);
+
+    while (!$stop) {
+        $worker->processNext((string) ($_ENV['QUEUE_NAME'] ?? 'default'));
+
+        if (function_exists('pcntl_signal_dispatch')) {
+            pcntl_signal_dispatch();
+        }
+
+        sleep(1);
+    }
+} finally {
+    $logger->info('Queue worker stopped', ['worker_id' => $workerId]);
+
+    flock($lockHandle, LOCK_UN);
+    fclose($lockHandle);
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="DX Engine PHPCS">
+    <description>Practical PSR-12 baseline for DX Engine Phase 1.</description>
+
+    <rule ref="PSR12">
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
+        <exclude name="Generic.Files.LineEndings.InvalidEOLChar"/>
+    </rule>
+
+    <file>src</file>
+    <file>database</file>
+    <file>bin</file>
+    <file>tests</file>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>storage/*</exclude-pattern>
+
+    <arg name="colors"/>
+    <arg value="sp"/>
+</ruleset>
